@@ -17,7 +17,7 @@ from xml.etree import ElementTree
 # from reportlab.pdfgen import canvas
 # from PIL import Image
 
-base_url = "http://m.paoshu8.com"
+base_url = "http://www.yqhy.org"
 
 page_list = ["/list/"]
 
@@ -25,15 +25,8 @@ chapter_next_list = []
 
 def main():
 
-    # book_item("http://www.yqhy.org/read/1/1390/")
+    book_item("http://www.yqhy.org/read/1/1390/")
     # chapter_item("http://www.yqhy.org/read/1/1390/23997879.html", "100")
-    book_item("http://m.paoshu8.com/wapbook-9498_1/")
-    book_item("http://m.paoshu8.com/wapbook-9498_2/")
-    book_item("http://m.paoshu8.com/wapbook-9498_3/")
-    book_item("http://m.paoshu8.com/wapbook-9498_4/")
-    book_item("http://m.paoshu8.com/wapbook-9498_5/")
-    book_item("http://m.paoshu8.com/wapbook-9498_6/")
-    book_item("http://m.paoshu8.com/wapbook-9498_7/")
 
 def list_item(pageurl):
     # html = etree.HTML(url)
@@ -90,7 +83,7 @@ def book_item(bookurl):
     # print(res)
     html = etree.HTML(html_data)
 
-    book = html.xpath('/html/body/div/h1/a')
+    book = html.xpath('/html/body/div/div/div/h1')
     print(book)
     # chapter_list = html.xpath('/html/body/div/div/ul/li/a/@href')
     for book_name in book:
@@ -100,23 +93,22 @@ def book_item(bookurl):
             os.makedirs(bookdir)
 
     book_file_path = os.path.join(os.getcwd(), book_name.text, "{0}.txt".format(book_name.text))
-    # if os.path.exists(book_file_path):
-    #     os.remove(book_file_path)
+    if os.path.exists(book_file_path):
+        os.remove(book_file_path)
         # f = open(book_file, 'w')
         # print(outfile)
         # f.close()
     # print(outfile + " created.")
 
-    book_file = open(book_file_path, "a+")
+    book_file = open(book_file_path, "w+")
 
-    chapter_list = html.xpath('/html/body/div/ul/li/a/@href')
+    chapter_list = html.xpath('/html/body/div/div/dl/dd/a/@href')
     for chapter in chapter_list:
         # print(chapter)
         chapterl_url = chapter.encode('utf-8').decode().replace('\n', '')
         # chapterl_url = chapterl_url.replace('\n','')
         # print(chapterl_url)
-        if chapterl_url.find("wapbook") > 0:
-            chapter_item(base_url + chapterl_url, book_file)
+        chapter_item(chapterl_url, book_file)
     #     chapterl_url = chapter.encode('utf-8').decode()
     #     print(chapterl_url)
     #     chapter_item(chapterl_url, bookdir)
@@ -124,7 +116,6 @@ def book_item(bookurl):
     book_file.close()
 
 def chapter_item(chapterl_url, book_file):
-    print(chapterl_url)
     # if not os.path.exists(bookdir):
     #     os.makedirs(bookdir)
     chapter_next_list.append(chapterl_url)
@@ -140,14 +131,7 @@ def chapter_item(chapterl_url, book_file):
     # res = html_data.decode('utf-8')
     # print(res)
 
-    chapter_name = html.xpath('/html/head/title')
-    for body in chapter_name:
-        print(body.text)
-        chapter_name_list = body.text.split('_')
-        print(chapter_name_list)
-        book_file.write(chapter_name_list[0] + '\n')
-
-    body_list = html.xpath('/html/body/div/div/p')
+    body_list = html.xpath('/html/body/div/table/tbody/tr/td/div/table/tbody/tr/td/div/p')
     for body in body_list:
         # print(chapter)
         # img_url = body.encode('utf-8').decode()
